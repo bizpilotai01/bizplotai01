@@ -6,6 +6,10 @@
   <title>BizPilot AI</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -14,61 +18,135 @@
     }
 
     .container {
-      max-width: 700px;
+      max-width: 750px;
       margin: auto;
-      padding: 60px 20px;
+      padding: 40px 20px;
     }
 
     h1 {
-      font-size: 42px;
       text-align: center;
+      font-size: 42px;
+      margin-bottom: 10px;
     }
 
     .subtitle {
       text-align: center;
       color: #cbd5e1;
-      font-size: 18px;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
     }
 
     .box {
       background: #1e293b;
       padding: 25px;
-      border-radius: 15px;
+      border-radius: 18px;
     }
 
-    input, textarea {
+    input,
+    textarea {
       width: 100%;
-      box-sizing: border-box;
-      margin: 10px 0;
-      padding: 15px;
-      border-radius: 8px;
+      margin: 8px 0;
+      padding: 14px;
       border: none;
+      border-radius: 8px;
       font-size: 16px;
     }
 
     textarea {
-      height: 120px;
+      height: 110px;
+      resize: vertical;
     }
 
-    button {
+    .generate {
       width: 100%;
-      margin-top: 15px;
       padding: 15px;
+      margin-top: 12px;
       border: none;
-      border-radius: 8px;
+      border-radius: 9px;
       background: #6366f1;
       color: white;
       font-size: 18px;
+      font-weight: bold;
       cursor: pointer;
     }
 
+    .generate:hover {
+      background: #4f46e5;
+    }
+
     #result {
-      margin-top: 25px;
-      padding: 20px;
-      background: #334155;
-      border-radius: 10px;
+      margin-top: 30px;
       display: none;
+    }
+
+    .website {
+      background: white;
+      color: #111827;
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .hero {
+      padding: 45px 25px;
+      text-align: center;
+      background: linear-gradient(135deg, #111827, #4f46e5);
+      color: white;
+    }
+
+    .hero h2 {
+      font-size: 34px;
+      margin: 0 0 10px;
+    }
+
+    .hero p {
+      color: #e5e7eb;
+      font-size: 17px;
+    }
+
+    .section {
+      padding: 25px;
+    }
+
+    .section h3 {
+      font-size: 24px;
+      margin-top: 0;
+    }
+
+    .service {
+      padding: 15px;
+      margin: 10px 0;
+      background: #f3f4f6;
+      border-radius: 10px;
+    }
+
+    .contact {
+      text-align: center;
+      padding: 25px;
+      background: #f8fafc;
+    }
+
+    .call,
+    .whatsapp {
+      display: inline-block;
+      padding: 13px 20px;
+      margin: 5px;
+      border-radius: 8px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .call {
+      background: #2563eb;
+    }
+
+    .whatsapp {
+      background: #16a34a;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #cbd5e1;
     }
   </style>
 </head>
@@ -87,14 +165,16 @@
 
     <input id="businessName" placeholder="Business Name">
 
-    <input id="businessType" placeholder="Business Type (Salon, Cafe, Gym...)">
+    <input id="businessType"
+      placeholder="Business Type (Salon, Cafe, Gym...)">
 
-    <input id="phone" placeholder="Phone / WhatsApp Number">
+    <input id="phone"
+      placeholder="Phone / WhatsApp Number">
 
     <textarea id="details"
       placeholder="Tell us about your business, services, location, timings..."></textarea>
 
-    <button onclick="generateWebsite()">
+    <button class="generate" onclick="generateWebsite()">
       ✨ Generate My Website
     </button>
 
@@ -105,13 +185,23 @@
 </div>
 
 <script>
+
 async function generateWebsite() {
 
-  const name = document.getElementById("businessName").value.trim();
-  const type = document.getElementById("businessType").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const details = document.getElementById("details").value.trim();
-  const result = document.getElementById("result");
+  const name =
+    document.getElementById("businessName").value.trim();
+
+  const type =
+    document.getElementById("businessType").value.trim();
+
+  const phone =
+    document.getElementById("phone").value.trim();
+
+  const details =
+    document.getElementById("details").value.trim();
+
+  const result =
+    document.getElementById("result");
 
   if (!name || !type) {
     alert("Please enter Business Name and Business Type.");
@@ -119,44 +209,129 @@ async function generateWebsite() {
   }
 
   result.style.display = "block";
-  result.innerHTML = "⏳ Creating your website...";
+
+  result.innerHTML =
+    '<div class="loading">⏳ AI is creating your website...</div>';
 
   try {
 
     const response = await fetch("/api/generate", {
+
       method: "POST",
+
       headers: {
         "Content-Type": "application/json"
       },
+
       body: JSON.stringify({
+
         businessName: name,
+
         businessType: type,
+
         phone: phone,
+
         details: details
+
       })
+
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || "Something went wrong");
+      throw new Error(
+        data.error || "Something went wrong"
+      );
     }
 
-    result.innerHTML =
-      "<h2>" + data.business.name + "</h2>" +
-      "<p><b>Business:</b> " + data.business.type + "</p>" +
-      "<p>" + (data.business.details || "") + "</p>" +
-      "<p>📞 " + phone + "</p>" +
-      "<hr>" +
-      "<h3>🤖 AI Generated Content</h3>" +
-      "<p>" + (data.ai || "No AI content returned.") + "</p>";
+    const whatsappNumber =
+      phone.replace(/\D/g, "");
+
+    result.innerHTML = `
+
+      <div class="website">
+
+        <div class="hero">
+
+          <h2>${name}</h2>
+
+          <p>${type}</p>
+
+          <p>
+            ${details}
+          </p>
+
+        </div>
+
+        <div class="section">
+
+          <h3>✨ About Our Business</h3>
+
+          <p>
+            ${data.ai || "Welcome to our business."}
+          </p>
+
+        </div>
+
+        <div class="section">
+
+          <h3>✂️ Our Services</h3>
+
+          <div class="service">
+            ✂️ Professional Haircut
+          </div>
+
+          <div class="service">
+            🧔 Beard Grooming
+          </div>
+
+          <div class="service">
+            💆 Hair Spa
+          </div>
+
+          <div class="service">
+            ✨ Facial
+          </div>
+
+        </div>
+
+        <div class="contact">
+
+          <h3>📞 Contact Us</h3>
+
+          <p>
+            Call or WhatsApp us today.
+          </p>
+
+          <a
+            class="call"
+            href="tel:${phone}">
+            📞 Call Now
+          </a>
+
+          <a
+            class="whatsapp"
+            href="https://wa.me/${whatsappNumber}"
+            target="_blank">
+            💬 WhatsApp
+          </a>
+
+        </div>
+
+      </div>
+
+    `;
 
   } catch (error) {
 
-    result.innerHTML = "❌ " + error.message;
+    result.innerHTML =
+      "❌ " + error.message;
 
   }
+
 }
+
 </script>
 
 </body>
