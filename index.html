@@ -329,9 +329,11 @@ Build and modify your website using natural language.
 <div class="chat" id="chat">
 
 <div class="message ai">
-
 👋 Hi! Tell me what you want to build or change.
+</div>
 
+<div class="message ai" id="loadStatus">
+⏳ Loading saved website...
 </div>
 
 </div>
@@ -386,7 +388,7 @@ Send
 
 <div class="preview-actions">
 
-<button onclick="location.reload()">
+<button onclick="loadSavedWebsite()">
 ↻ Refresh
 </button>
 
@@ -401,7 +403,7 @@ Send
 <div class="preview" id="preview">
 
 <div class="loading">
-Your AI-generated website will appear here.
+Loading your website...
 </div>
 
 </div>
@@ -427,20 +429,128 @@ details:
 };
 
 
+/*
+  Current website state.
+  This is updated every time AI changes the website.
+*/
+
+let currentAgentState = null;
+
+
+/*
+  Load saved website from Supabase
+  through /api/generate GET endpoint.
+*/
+
+async function loadSavedWebsite(){
+
+const preview =
+document.getElementById("preview");
+
+const loadStatus =
+document.getElementById("loadStatus");
+
+try{
+
+preview.innerHTML = `
+<div class="loading">
+⏳ Loading saved website...
+</div>
+`;
+
+const response =
+await fetch(
+"/api/generate?businessName=" +
+encodeURIComponent(business.name)
+);
+
+const data =
+await response.json();
+
+if(!response.ok){
+
+throw new Error(
+data.error || "Could not load website"
+);
+
+}
+
+
+/*
+  If project exists, restore it.
+*/
+
+if(data.project && data.project.website_state){
+
+currentAgentState =
+data.project.website_state;
+
+renderWebsite(
+currentAgentState
+);
+
+loadStatus.innerHTML =
+"✅ Saved website loaded.";
+
+}else{
+
+loadStatus.innerHTML =
+"ℹ️ No saved website found. Create one using the AI Agent.";
+
+preview.innerHTML = `
+<div class="loading">
+Your AI-generated website will appear here.
+</div>
+`;
+
+}
+
+}catch(error){
+
+console.error(error);
+
+loadStatus.innerHTML =
+"⚠️ Could not load saved website.";
+
+preview.innerHTML = `
+<div class="loading">
+Website is ready. Use the AI Agent to create it.
+</div>
+`;
+
+}
+
+}
+
+
+/*
+  AI Agent
+*/
+
 async function runAgent(){
 
 const command =
-document.getElementById("command").value.trim();
+document.getElementById("command")
+.value
+.trim();
 
 const model =
-document.getElementById("model").value;
+document.getElementById("model")
+.value;
 
 const chat =
 document.getElementById("chat");
 
 if(!command){
-  return;
+
+return;
+
 }
+
+
+/*
+  User message
+*/
 
 chat.innerHTML += `
 <div class="message user">
@@ -448,17 +558,27 @@ ${escapeHtml(command)}
 </div>
 `;
 
+
+/*
+  Thinking message
+*/
+
 chat.innerHTML += `
 <div class="message ai" id="thinking">
 ⏳ AI Agent is working...
 </div>
 `;
 
-chat.scrollTop = chat.scrollHeight;
+chat.scrollTop =
+chat.scrollHeight;
+
 
 try{
 
-const response = await fetch("/api/generate",{
+const response =
+await fetch(
+"/api/generate",
+{
 
 method:"POST",
 
@@ -468,50 +588,131 @@ headers:{
 
 body:JSON.stringify({
 
-businessName:business.name,
+businessName:
+business.name,
 
-businessType:business.type,
+businessType:
+business.type,
 
-phone:business.phone,
+phone:
+business.phone,
 
-details:business.details,
+details:
+business.details,
 
-command:command,
+command:
+command,
 
-model:model
+model:
+model,
+
+/*
+  Send current website state
+  so AI knows what already exists.
+*/
+
+existingState:
+currentAgentState
 
 })
 
 });
 
-const data = await response.json();
+
+const data =
+await response.json();
+
 
 if(!response.ok){
 
 throw new Error(
-data.error || "AI Agent error"
+data.error ||
+"AI Agent error"
 );
 
 }
 
-const agent = data.agent || {};
 
-document.getElementById("thinking").innerHTML =
-"✅ Website updated successfully.";
+/*
+  Receive updated website.
+*/
 
-renderWebsite(agent);
+const agent =
+data.agent || {};
 
-document.getElementById("command").value="";
+
+/*
+  Save it locally in memory.
+*/
+
+currentAgentState =
+agent;
+
+
+/*
+  Update chat.
+*/
+
+const thinking =
+document.getElementById("thinking");
+
+if(thinking){
+
+thinking.innerHTML =
+"✅ Website updated and saved.";
+
+}
+
+
+/*
+  Render website.
+*/
+
+renderWebsite(
+agent
+);
+
+
+/*
+  Clear command.
+*/
+
+document.getElementById(
+"command"
+).value = "";
+
+
+/*
+  Scroll chat.
+*/
+
+chat.scrollTop =
+chat.scrollHeight;
+
 
 }catch(error){
 
-document.getElementById("thinking").innerHTML =
-"❌ " + escapeHtml(error.message);
+const thinking =
+document.getElementById("thinking");
+
+if(thinking){
+
+thinking.innerHTML =
+"❌ " +
+escapeHtml(
+error.message
+);
 
 }
 
 }
 
+}
+
+
+/*
+  Render AI website preview.
+*/
 
 function renderWebsite(agent){
 
@@ -527,17 +728,22 @@ agent.services || [];
 const buttons =
 agent.buttons || [];
 
+
 const primaryColor =
-design.primaryColor || "#6366f1";
+design.primaryColor ||
+"#6366f1";
 
 const backgroundColor =
-design.backgroundColor || "#ffffff";
+design.backgroundColor ||
+"#ffffff";
 
 const textColor =
-design.textColor || "#111827";
+design.textColor ||
+"#111827";
 
 const heroBackground =
-design.heroBackground || "#111827";
+design.heroBackground ||
+"#111827";
 
 
 preview.innerHTML = `
@@ -545,16 +751,20 @@ preview.innerHTML = `
 <div
 class="site-hero"
 style="
-background:${heroBackground};
+background:${escapeHtml(heroBackground)};
 ">
 
 <h1>
-${escapeHtml(agent.headline || business.name)}
+${escapeHtml(
+agent.headline ||
+business.name
+)}
 </h1>
 
 <p>
 ${escapeHtml(
-agent.description || business.details
+agent.description ||
+business.details
 )}
 </p>
 
@@ -564,8 +774,8 @@ agent.description || business.details
 <div
 class="site-section"
 style="
-background:${backgroundColor};
-color:${textColor};
+background:${escapeHtml(backgroundColor)};
+color:${escapeHtml(textColor)};
 ">
 
 <h2>
@@ -574,30 +784,56 @@ color:${textColor};
 
 <p>
 ${escapeHtml(
-agent.description || business.details
+agent.description ||
+business.details
 )}
 </p>
+
 
 <h2>
 🛠️ Services
 </h2>
 
+
 ${
-services.map(service => `
+services.map(service => {
+
+const serviceName =
+typeof service === "string"
+? service
+: service.name || "";
+
+const serviceDescription =
+typeof service === "object"
+? service.description || ""
+: "";
+
+return `
 
 <div
 class="service"
 style="
-background:${primaryColor}15;
-border-left:4px solid ${primaryColor};
+background:${escapeHtml(primaryColor)}15;
+border-left:4px solid ${escapeHtml(primaryColor)};
 ">
 
-${escapeHtml(service)}
+<strong>
+${escapeHtml(serviceName)}
+</strong>
+
+${
+serviceDescription
+? `<p>${escapeHtml(serviceDescription)}</p>`
+: ""
+}
 
 </div>
 
-`).join("")
+`;
+
+}).join("")
 }
+
 
 <h2>
 🚀 AI Changes
@@ -608,7 +844,8 @@ ${escapeHtml(service)}
 ${
 (agent.changes || [])
 .map(change =>
-"✓ " + escapeHtml(change)
+"✓ " +
+escapeHtml(change)
 )
 .join("<br>")
 }
@@ -621,14 +858,16 @@ ${
 <div
 class="buttons"
 style="
-background:${backgroundColor};
+background:${escapeHtml(backgroundColor)};
 ">
 
 <h2>
 ${escapeHtml(
-agent.cta || "Book Your Appointment"
+agent.cta ||
+"Book Your Appointment"
 )}
 </h2>
+
 
 ${
 buttons.map(button => {
@@ -636,7 +875,9 @@ buttons.map(button => {
 if(button.type === "whatsapp"){
 
 const number =
-business.phone.replace(/\D/g,"");
+business.phone
+.replace(/\D/g,"");
+
 
 return `
 
@@ -646,7 +887,8 @@ href="https://wa.me/${number}"
 target="_blank">
 
 💬 ${escapeHtml(
-button.label || "WhatsApp"
+button.label ||
+"WhatsApp"
 )}
 
 </a>
@@ -655,10 +897,32 @@ button.label || "WhatsApp"
 
 }
 
+
+if(button.type === "call"){
+
+return `
+
+<a
+class="action-button call"
+href="tel:${business.phone}">
+
+📞 ${escapeHtml(
+button.label ||
+"Call Now"
+)}
+
+</a>
+
+`;
+
+}
+
+
 return "";
 
 }).join("")
 }
+
 
 <a
 class="action-button call"
@@ -668,12 +932,17 @@ href="tel:${business.phone}">
 
 </a>
 
+
 </div>
 
 `;
 
 }
 
+
+/*
+  Publish placeholder
+*/
 
 function publishSite(){
 
@@ -684,16 +953,57 @@ alert(
 }
 
 
+/*
+  Security helper
+*/
+
 function escapeHtml(text){
 
-return String(text || "")
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
+return String(
+text || ""
+)
+
+.replace(
+/&/g,
+"&amp;"
+)
+
+.replace(
+/</g,
+"&lt;"
+)
+
+.replace(
+/>/g,
+"&gt;"
+)
+
+.replace(
+/"/g,
+"&quot;"
+)
+
+.replace(
+/'/g,
+"&#039;"
+);
 
 }
+
+
+/*
+  Automatically load saved project
+  when page opens.
+*/
+
+window.addEventListener(
+"DOMContentLoaded",
+function(){
+
+loadSavedWebsite();
+
+}
+);
 
 </script>
 
