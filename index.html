@@ -4,10 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>BizPilot AI — AI Website Agent</title>
+<title>BizPilot AI</title>
 
 <style>
-
 *{
   box-sizing:border-box;
 }
@@ -18,14 +17,6 @@ body{
   background:#0b1120;
   color:#e5e7eb;
 }
-
-.app{
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-}
-
-/* TOP BAR */
 
 .topbar{
   height:64px;
@@ -43,20 +34,15 @@ body{
 }
 
 .status{
-  font-size:13px;
   color:#22c55e;
+  font-size:13px;
 }
-
-/* WORKSPACE */
 
 .workspace{
-  flex:1;
-  display:grid;
-  grid-template-columns:220px 360px 1fr;
   min-height:calc(100vh - 64px);
+  display:grid;
+  grid-template-columns:210px 350px 1fr;
 }
-
-/* FILES */
 
 .files{
   background:#0f172a;
@@ -65,29 +51,21 @@ body{
 }
 
 .files h3{
-  margin-top:0;
-  font-size:14px;
   color:#94a3b8;
+  font-size:13px;
 }
 
 .file{
   padding:10px;
   border-radius:7px;
-  cursor:pointer;
-  margin-bottom:4px;
+  margin-bottom:5px;
   font-size:14px;
 }
 
-.file:hover,
-.file.active{
+.file.active,
+.file:hover{
   background:#1e293b;
 }
-
-.file-icon{
-  margin-right:7px;
-}
-
-/* AGENT */
 
 .agent{
   background:#111827;
@@ -103,7 +81,6 @@ body{
 
 .agent-header h2{
   margin:0 0 5px;
-  font-size:18px;
 }
 
 .agent-header p{
@@ -122,8 +99,8 @@ body{
   padding:12px;
   border-radius:10px;
   margin-bottom:12px;
-  line-height:1.5;
   font-size:14px;
+  line-height:1.5;
 }
 
 .ai{
@@ -141,14 +118,13 @@ body{
 
 textarea{
   width:100%;
-  height:90px;
+  height:85px;
   resize:none;
+  padding:12px;
+  border-radius:9px;
   border:1px solid #334155;
   background:#0f172a;
   color:white;
-  padding:12px;
-  border-radius:9px;
-  font-size:14px;
 }
 
 .controls{
@@ -159,11 +135,11 @@ textarea{
 
 select{
   flex:1;
+  padding:10px;
   background:#0f172a;
   color:white;
   border:1px solid #334155;
   border-radius:8px;
-  padding:10px;
 }
 
 button{
@@ -179,8 +155,6 @@ button{
 button:hover{
   background:#4f46e5;
 }
-
-/* PREVIEW */
 
 .preview-area{
   background:#020617;
@@ -199,13 +173,12 @@ button:hover{
 
 .preview-title{
   font-size:14px;
-  color:#cbd5e1;
 }
 
 .preview-actions button{
   background:#1e293b;
-  padding:7px 12px;
   font-size:12px;
+  padding:7px 12px;
 }
 
 .preview{
@@ -217,12 +190,9 @@ button:hover{
   overflow:auto;
 }
 
-/* GENERATED SITE */
-
 .site-hero{
   padding:70px 30px;
   text-align:center;
-  background:linear-gradient(135deg,#111827,#4f46e5);
   color:white;
 }
 
@@ -232,7 +202,7 @@ button:hover{
 }
 
 .site-hero p{
-  max-width:650px;
+  max-width:700px;
   margin:auto;
   line-height:1.6;
 }
@@ -244,16 +214,32 @@ button:hover{
 }
 
 .service{
-  background:#f1f5f9;
   padding:16px;
-  border-radius:9px;
   margin:10px 0;
+  border-radius:9px;
 }
 
-.cta{
+.buttons{
   text-align:center;
-  padding:35px;
-  background:#f8fafc;
+  padding:30px;
+}
+
+.action-button{
+  display:inline-block;
+  margin:6px;
+  padding:13px 20px;
+  border-radius:8px;
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+.whatsapp{
+  background:#16a34a;
+}
+
+.call{
+  background:#2563eb;
 }
 
 .loading{
@@ -262,15 +248,7 @@ button:hover{
   color:#64748b;
 }
 
-@media(max-width:1000px){
-
-  .workspace{
-    grid-template-columns:180px 320px 1fr;
-  }
-
-}
-
-@media(max-width:750px){
+@media(max-width:850px){
 
   .workspace{
     display:block;
@@ -287,17 +265,11 @@ button:hover{
   .preview-area{
     min-height:600px;
   }
-
 }
-
 </style>
 </head>
 
 <body>
-
-<div class="app">
-
-<!-- TOP BAR -->
 
 <div class="topbar">
 
@@ -311,13 +283,7 @@ button:hover{
 
 </div>
 
-
-<!-- WORKSPACE -->
-
 <div class="workspace">
-
-
-<!-- FILES PANEL -->
 
 <div class="files">
 
@@ -335,9 +301,7 @@ button:hover{
 📁 api/
 </div>
 
-<h3 style="margin-top:25px;">
-TOOLS
-</h3>
+<h3>TOOLS</h3>
 
 <div class="file">
 🌐 Live Preview
@@ -350,8 +314,6 @@ TOOLS
 </div>
 
 
-<!-- AI AGENT -->
-
 <div class="agent">
 
 <div class="agent-header">
@@ -359,34 +321,27 @@ TOOLS
 <h2>🤖 AI Agent</h2>
 
 <p>
-Describe what you want to build or change.
+Build and modify your website using natural language.
 </p>
 
 </div>
-
 
 <div class="chat" id="chat">
 
 <div class="message ai">
 
-👋 Hi! I'm BizPilot AI.
-
-Tell me what you want to build.
-
-Example:
-
-"Create a modern salon website"
+👋 Hi! Tell me what you want to build or change.
 
 </div>
 
 </div>
-
 
 <div class="chatbox">
 
 <textarea
 id="command"
-placeholder="Ask AI to build or change something..."></textarea>
+placeholder="Example: Make the background black and add WhatsApp booking button..."
+></textarea>
 
 <div class="controls">
 
@@ -421,8 +376,6 @@ Send
 </div>
 
 
-<!-- PREVIEW -->
-
 <div class="preview-area">
 
 <div class="preview-bar">
@@ -433,7 +386,7 @@ Send
 
 <div class="preview-actions">
 
-<button onclick="refreshPreview()">
+<button onclick="location.reload()">
 ↻ Refresh
 </button>
 
@@ -445,19 +398,13 @@ Send
 
 </div>
 
-
 <div class="preview" id="preview">
 
 <div class="loading">
-
-Your generated website will appear here.
-
+Your AI-generated website will appear here.
 </div>
 
 </div>
-
-</div>
-
 
 </div>
 
@@ -465,8 +412,6 @@ Your generated website will appear here.
 
 
 <script>
-
-/* DEFAULT BUSINESS */
 
 let business = {
 
@@ -482,8 +427,6 @@ details:
 };
 
 
-/* RUN AI AGENT */
-
 async function runAgent(){
 
 const command =
@@ -495,57 +438,23 @@ document.getElementById("model").value;
 const chat =
 document.getElementById("chat");
 
-const preview =
-document.getElementById("preview");
-
-
 if(!command){
-
-return;
-
+  return;
 }
 
-
-/* USER MESSAGE */
-
 chat.innerHTML += `
-
 <div class="message user">
-
 ${escapeHtml(command)}
-
 </div>
-
 `;
 
-
-/* LOADING */
-
 chat.innerHTML += `
-
 <div class="message ai" id="thinking">
-
 ⏳ AI Agent is working...
-
 </div>
-
 `;
 
 chat.scrollTop = chat.scrollHeight;
-
-
-/* PREVIEW LOADING */
-
-preview.innerHTML = `
-
-<div class="loading">
-
-⏳ Building your website...
-
-</div>
-
-`;
-
 
 try{
 
@@ -575,9 +484,7 @@ model:model
 
 });
 
-
 const data = await response.json();
-
 
 if(!response.ok){
 
@@ -587,93 +494,89 @@ data.error || "AI Agent error"
 
 }
 
+const agent = data.agent || {};
 
-const agent =
-data.agent || {};
-
-
-document.getElementById("thinking").innerHTML = `
-
-✅ Done!
-
-${escapeHtml(
-(agent.changes || ["Website updated"]).join(" • ")
-)}
-
-`;
-
-
-/* RENDER WEBSITE */
+document.getElementById("thinking").innerHTML =
+"✅ Website updated successfully.";
 
 renderWebsite(agent);
 
-
-/* CLEAR INPUT */
-
 document.getElementById("command").value="";
-
 
 }catch(error){
 
-document.getElementById("thinking").innerHTML = `
-
-❌ ${escapeHtml(error.message)}
-
-`;
+document.getElementById("thinking").innerHTML =
+"❌ " + escapeHtml(error.message);
 
 }
 
 }
 
-
-/* RENDER WEBSITE */
 
 function renderWebsite(agent){
 
 const preview =
 document.getElementById("preview");
 
+const design =
+agent.design || {};
+
 const services =
 agent.services || [];
+
+const buttons =
+agent.buttons || [];
+
+const primaryColor =
+design.primaryColor || "#6366f1";
+
+const backgroundColor =
+design.backgroundColor || "#ffffff";
+
+const textColor =
+design.textColor || "#111827";
+
+const heroBackground =
+design.heroBackground || "#111827";
 
 
 preview.innerHTML = `
 
-<div class="site-hero">
+<div
+class="site-hero"
+style="
+background:${heroBackground};
+">
 
 <h1>
-
-${escapeHtml(
-agent.headline || business.name
-)}
-
+${escapeHtml(agent.headline || business.name)}
 </h1>
 
 <p>
-
 ${escapeHtml(
 agent.description || business.details
 )}
-
 </p>
 
 </div>
 
 
-<div class="site-section">
+<div
+class="site-section"
+style="
+background:${backgroundColor};
+color:${textColor};
+">
 
 <h2>
 ✨ About
 </h2>
 
 <p>
-
 ${escapeHtml(
 agent.description || business.details
 )}
-
 </p>
-
 
 <h2>
 🛠️ Services
@@ -682,7 +585,12 @@ agent.description || business.details
 ${
 services.map(service => `
 
-<div class="service">
+<div
+class="service"
+style="
+background:${primaryColor}15;
+border-left:4px solid ${primaryColor};
+">
 
 ${escapeHtml(service)}
 
@@ -690,7 +598,6 @@ ${escapeHtml(service)}
 
 `).join("")
 }
-
 
 <h2>
 🚀 AI Changes
@@ -700,7 +607,9 @@ ${escapeHtml(service)}
 
 ${
 (agent.changes || [])
-.map(change => "✓ " + escapeHtml(change))
+.map(change =>
+"✓ " + escapeHtml(change)
+)
 .join("<br>")
 }
 
@@ -709,21 +618,55 @@ ${
 </div>
 
 
-<div class="cta">
+<div
+class="buttons"
+style="
+background:${backgroundColor};
+">
 
 <h2>
-
 ${escapeHtml(
-agent.cta || "Contact us today"
+agent.cta || "Book Your Appointment"
 )}
-
 </h2>
 
-<button onclick="alert('Contact feature coming soon')">
+${
+buttons.map(button => {
 
-📞 Contact Business
+if(button.type === "whatsapp"){
 
-</button>
+const number =
+business.phone.replace(/\D/g,"");
+
+return `
+
+<a
+class="action-button whatsapp"
+href="https://wa.me/${number}"
+target="_blank">
+
+💬 ${escapeHtml(
+button.label || "WhatsApp"
+)}
+
+</a>
+
+`;
+
+}
+
+return "";
+
+}).join("")
+}
+
+<a
+class="action-button call"
+href="tel:${business.phone}">
+
+📞 Call Now
+
+</a>
 
 </div>
 
@@ -732,27 +675,14 @@ agent.cta || "Contact us today"
 }
 
 
-/* REFRESH */
-
-function refreshPreview(){
-
-location.reload();
-
-}
-
-
-/* PUBLISH */
-
 function publishSite(){
 
 alert(
-"🚀 Publishing system next phase me connect hoga."
+"🚀 Publishing system will be connected in the next phase."
 );
 
 }
 
-
-/* SECURITY */
 
 function escapeHtml(text){
 
