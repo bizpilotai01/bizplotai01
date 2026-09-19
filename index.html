@@ -1,334 +1,322 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BizPilot AI</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<title>BizPilot AI</title>
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
-    }
+<style>
+*{
+  box-sizing:border-box;
+}
 
-    .container {
-      max-width: 750px;
-      margin: auto;
-      padding: 40px 20px;
-    }
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#0f172a;
+  color:white;
+}
 
-    h1 {
-      text-align: center;
-      font-size: 42px;
-      margin-bottom: 10px;
-    }
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:30px 20px;
+}
 
-    .subtitle {
-      text-align: center;
-      color: #cbd5e1;
-      margin-bottom: 30px;
-    }
+h1{
+  text-align:center;
+  font-size:40px;
+}
 
-    .box {
-      background: #1e293b;
-      padding: 25px;
-      border-radius: 18px;
-    }
+.subtitle{
+  text-align:center;
+  color:#94a3b8;
+}
 
-    input,
-    textarea {
-      width: 100%;
-      margin: 8px 0;
-      padding: 14px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-    }
+.dashboard{
+  display:grid;
+  grid-template-columns:320px 1fr;
+  gap:20px;
+  margin-top:30px;
+}
 
-    textarea {
-      height: 110px;
-      resize: vertical;
-    }
+.panel{
+  background:#1e293b;
+  padding:20px;
+  border-radius:16px;
+}
 
-    .generate {
-      width: 100%;
-      padding: 15px;
-      margin-top: 12px;
-      border: none;
-      border-radius: 9px;
-      background: #6366f1;
-      color: white;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+input,textarea,select{
+  width:100%;
+  padding:13px;
+  margin:8px 0;
+  border:0;
+  border-radius:8px;
+  font-size:15px;
+}
 
-    .generate:hover {
-      background: #4f46e5;
-    }
+textarea{
+  height:130px;
+  resize:vertical;
+}
 
-    #result {
-      margin-top: 30px;
-      display: none;
-    }
+button{
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border:0;
+  border-radius:8px;
+  background:#6366f1;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
 
-    .website {
-      background: white;
-      color: #111827;
-      border-radius: 18px;
-      overflow: hidden;
-    }
+button:hover{
+  background:#4f46e5;
+}
 
-    .hero {
-      padding: 45px 25px;
-      text-align: center;
-      background: linear-gradient(135deg, #111827, #4f46e5);
-      color: white;
-    }
+.preview{
+  background:white;
+  color:#111827;
+  min-height:500px;
+  border-radius:16px;
+  overflow:hidden;
+}
 
-    .hero h2 {
-      font-size: 34px;
-      margin: 0 0 10px;
-    }
+.preview-header{
+  background:linear-gradient(135deg,#111827,#4f46e5);
+  color:white;
+  padding:50px 25px;
+  text-align:center;
+}
 
-    .hero p {
-      color: #e5e7eb;
-      font-size: 17px;
-    }
+.preview-header h2{
+  font-size:36px;
+  margin:0 0 10px;
+}
 
-    .section {
-      padding: 25px;
-    }
+.preview-section{
+  padding:25px;
+}
 
-    .section h3 {
-      font-size: 24px;
-      margin-top: 0;
-    }
+.service{
+  background:#f1f5f9;
+  padding:15px;
+  margin:10px 0;
+  border-radius:8px;
+}
 
-    .service {
-      padding: 15px;
-      margin: 10px 0;
-      background: #f3f4f6;
-      border-radius: 10px;
-    }
+.loading{
+  text-align:center;
+  padding:30px;
+  color:#64748b;
+}
 
-    .contact {
-      text-align: center;
-      padding: 25px;
-      background: #f8fafc;
-    }
-
-    .call,
-    .whatsapp {
-      display: inline-block;
-      padding: 13px 20px;
-      margin: 5px;
-      border-radius: 8px;
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .call {
-      background: #2563eb;
-    }
-
-    .whatsapp {
-      background: #16a34a;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 20px;
-      color: #cbd5e1;
-    }
-  </style>
+@media(max-width:800px){
+  .dashboard{
+    grid-template-columns:1fr;
+  }
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-  <h1>🚀 BizPilot AI</h1>
+<h1>🚀 BizPilot AI</h1>
 
-  <p class="subtitle">
-    Create a professional website for your local business.
-  </p>
+<p class="subtitle">
+Your AI Website Building Agent
+</p>
 
-  <div class="box">
+<div class="dashboard">
 
-    <input id="businessName" placeholder="Business Name">
+<div class="panel">
 
-    <input id="businessType"
-      placeholder="Business Type (Salon, Cafe, Gym...)">
+<h2>🤖 AI Agent</h2>
 
-    <input id="phone"
-      placeholder="Phone / WhatsApp Number">
+<label>AI Model</label>
 
-    <textarea id="details"
-      placeholder="Tell us about your business, services, location, timings..."></textarea>
+<select id="model">
+<option value="gemini">Gemini</option>
+<option value="openai">OpenAI</option>
+<option value="anthropic">Anthropic</option>
+<option value="kimi">Kimi</option>
+</select>
 
-    <button class="generate" onclick="generateWebsite()">
-      ✨ Generate My Website
-    </button>
+<input
+id="businessName"
+placeholder="Business Name">
 
-    <div id="result"></div>
+<input
+id="businessType"
+placeholder="Business Type">
 
-  </div>
+<input
+id="phone"
+placeholder="Phone / WhatsApp">
+
+<textarea
+id="details"
+placeholder="Describe your business..."></textarea>
+
+<textarea
+id="command"
+placeholder="Tell AI what to build or change...
+Example: Make a modern salon website"></textarea>
+
+<button onclick="runAgent()">
+✨ Run AI Agent
+</button>
+
+</div>
+
+<div class="preview" id="preview">
+
+<div class="loading">
+👋 Enter your business details and tell the AI Agent what to build.
+</div>
+
+</div>
+
+</div>
 
 </div>
 
 <script>
 
-async function generateWebsite() {
+async function runAgent(){
 
-  const name =
-    document.getElementById("businessName").value.trim();
+const businessName =
+document.getElementById("businessName").value.trim();
 
-  const type =
-    document.getElementById("businessType").value.trim();
+const businessType =
+document.getElementById("businessType").value.trim();
 
-  const phone =
-    document.getElementById("phone").value.trim();
+const phone =
+document.getElementById("phone").value.trim();
 
-  const details =
-    document.getElementById("details").value.trim();
+const details =
+document.getElementById("details").value.trim();
 
-  const result =
-    document.getElementById("result");
+const command =
+document.getElementById("command").value.trim();
 
-  if (!name || !type) {
-    alert("Please enter Business Name and Business Type.");
-    return;
-  }
+const model =
+document.getElementById("model").value;
 
-  result.style.display = "block";
+const preview =
+document.getElementById("preview");
 
-  result.innerHTML =
-    '<div class="loading">⏳ AI is creating your website...</div>';
+if(!businessName || !businessType){
 
-  try {
+alert("Business Name aur Business Type bharo.");
 
-    const response = await fetch("/api/generate", {
+return;
+}
 
-      method: "POST",
+preview.innerHTML = `
+<div class="loading">
+⏳ AI Agent is building your website...
+</div>
+`;
 
-      headers: {
-        "Content-Type": "application/json"
-      },
+try{
 
-      body: JSON.stringify({
+const response = await fetch("/api/generate",{
 
-        businessName: name,
+method:"POST",
 
-        businessType: type,
+headers:{
+"Content-Type":"application/json"
+},
 
-        phone: phone,
+body:JSON.stringify({
 
-        details: details
+businessName,
+businessType,
+phone,
+details,
+command,
+model
 
-      })
+})
 
-    });
+});
 
-    const data = await response.json();
+const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(
-        data.error || "Something went wrong"
-      );
-    }
+if(!response.ok){
 
-    const whatsappNumber =
-      phone.replace(/\D/g, "");
+throw new Error(
+data.error || "AI Agent error"
+);
 
-    result.innerHTML = `
+}
 
-      <div class="website">
+const agent = data.agent || {};
 
-        <div class="hero">
+const services =
+agent.services || [];
 
-          <h2>${name}</h2>
+preview.innerHTML = `
 
-          <p>${type}</p>
+<div class="preview-header">
 
-          <p>
-            ${details}
-          </p>
+<h2>
+${agent.headline || businessName}
+</h2>
 
-        </div>
+<p>
+${agent.description || details}
+</p>
 
-        <div class="section">
+</div>
 
-          <h3>✨ About Our Business</h3>
+<div class="preview-section">
 
-          <p>
-            ${data.ai || "Welcome to our business."}
-          </p>
+<h2>✨ About</h2>
 
-        </div>
+<p>
+${agent.description || details}
+</p>
 
-        <div class="section">
+<h2>🛠️ Services</h2>
 
-          <h3>✂️ Our Services</h3>
+${
+services.map(service => `
+<div class="service">
+${service}
+</div>
+`).join("")
+}
 
-          <div class="service">
-            ✂️ Professional Haircut
-          </div>
+<h2>🚀 AI Changes</h2>
 
-          <div class="service">
-            🧔 Beard Grooming
-          </div>
+<p>
+${
+(agent.changes || [])
+.join("<br>")
+}
+</p>
 
-          <div class="service">
-            💆 Hair Spa
-          </div>
+</div>
 
-          <div class="service">
-            ✨ Facial
-          </div>
+`;
 
-        </div>
+}catch(error){
 
-        <div class="contact">
+preview.innerHTML = `
+<div class="loading">
+❌ ${error.message}
+</div>
+`;
 
-          <h3>📞 Contact Us</h3>
-
-          <p>
-            Call or WhatsApp us today.
-          </p>
-
-          <a
-            class="call"
-            href="tel:${phone}">
-            📞 Call Now
-          </a>
-
-          <a
-            class="whatsapp"
-            href="https://wa.me/${whatsappNumber}"
-            target="_blank">
-            💬 WhatsApp
-          </a>
-
-        </div>
-
-      </div>
-
-    `;
-
-  } catch (error) {
-
-    result.innerHTML =
-      "❌ " + error.message;
-
-  }
+}
 
 }
 
