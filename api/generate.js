@@ -1,9 +1,18 @@
 export default async function handler(req, res) {
+
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({
+      error: "Method not allowed"
+    });
   }
 
-  const { businessName, businessType, details } = req.body;
+  const {
+    businessName,
+    businessType,
+    details,
+    command,
+    model
+  } = req.body;
 
   if (!businessName || !businessType) {
     return res.status(400).json({
@@ -20,29 +29,65 @@ export default async function handler(req, res) {
   }
 
   const prompt = `
-Create professional website content for this local business.
+You are BizPilot AI, an AI website-building agent.
 
-Business Name: ${businessName}
-Business Type: ${businessType}
-Business Details: ${details || "Not provided"}
+Business Name:
+${businessName}
 
-Create:
-1. A catchy headline
-2. A short professional description
-3. A list of services
-4. A strong call-to-action
+Business Type:
+${businessType}
 
-Keep the content concise and suitable for a modern business website.
+Business Details:
+${details || "Not provided"}
+
+User Command:
+${command || "Create a professional website"}
+
+Selected Model:
+${model || "gemini"}
+
+Your job is to understand the user's request and generate content/instructions for a professional business website.
+
+Return ONLY valid JSON.
+
+Use exactly this structure:
+
+{
+  "headline": "short website headline",
+  "description": "professional business description",
+  "services": [
+    "service 1",
+    "service 2",
+    "service 3",
+    "service 4"
+  ],
+  "cta": "short call to action",
+  "design": {
+    "style": "modern",
+    "primaryColor": "#6366f1",
+    "backgroundColor": "#ffffff"
+  },
+  "changes": [
+    "what the AI agent created",
+    "what the AI agent changed"
+  ]
+}
+
+Do not use Markdown.
+Do not put JSON inside a code block.
 `;
 
   try {
+
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=" + apiKey,
       {
         method: "POST",
+
         headers: {
           "Content-Type": "application/json"
         },
+
         body: JSON.stringify({
           contents: [
             {
@@ -70,19 +115,63 @@ Keep the content concise and suitable for a modern business website.
         ?.map(part => part.text)
         .join("") || "";
 
+    let agentResult;
+
+    try {
+
+      const cleanText = aiText
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
+
+      agentResult = JSON.parse(cleanText);
+
+    } catch (error) {
+
+      agentResult = {
+        headline: businessName,
+
+        description:
+          aiText || "Professional business website",
+
+        services: [],
+
+        cta: "Contact us today",
+
+        design: {
+          style: "modern",
+          primaryColor: "#6366f1",
+          backgroundColor: "#ffffff"
+        },
+
+        changes: [
+          "AI generated website content"
+        ]
+      };
+    }
+
     return res.status(200).json({
+
       success: true,
+
+      model: model || "gemini",
+
       business: {
         name: businessName,
         type: businessType,
         details: details || ""
       },
-      ai: aiText
+
+      agent: agentResult
+
     });
 
   } catch (error) {
+
     return res.status(500).json({
       error: error.message || "Server error"
     });
+
   }
+
 }
