@@ -109,18 +109,54 @@
   </div>
 
   <script>
-    function generateWebsite() {
+    
+async function generateWebsite() {
+  const name = document.getElementById("businessName").value.trim();
+  const type = document.getElementById("businessType").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const details = document.getElementById("details").value.trim();
 
-      const name = document.getElementById("businessName").value;
-      const type = document.getElementById("businessType").value;
-      const phone = document.getElementById("phone").value;
-      const details = document.getElementById("details").value;
+  const result = document.getElementById("result");
 
-      if (!name || !type) {
-        alert("Please enter Business Name and Business Type.");
-        return;
-      }
+  if (!name || !type) {
+    alert("Please enter Business Name and Business Type.");
+    return;
+  }
 
+  result.style.display = "block";
+  result.innerHTML = "⏳ Creating your website...";
+
+  try {
+    const response = await fetch("/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        businessName: name,
+        businessType: type,
+        phone: phone,
+        details: details
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Something went wrong");
+    }
+
+    result.innerHTML =
+      "<h2>" + data.business.name + "</h2>" +
+      "<p><b>Business:</b> " + data.business.type + "</p>" +
+      "<p>" + (data.business.details || "") + "</p>" +
+      "<p>📞 " + phone + "</p>" +
+      "<p>✅ BizPilot AI backend connected!</p>";
+
+  } catch (error) {
+    result.innerHTML = "❌ " + error.message;
+  }
+    }
       const result = document.getElementById("result");
 
       result.style.display = "block";
