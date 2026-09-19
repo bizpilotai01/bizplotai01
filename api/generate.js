@@ -31,50 +31,57 @@ export default async function handler(req, res) {
   const prompt = `
 You are BizPilot AI, an AI website-building agent.
 
-Business Name:
-${businessName}
+Business:
+Name: ${businessName}
+Type: ${businessType}
+Details: ${details || "Not provided"}
 
-Business Type:
-${businessType}
-
-Business Details:
-${details || "Not provided"}
-
-User Command:
+User request:
 ${command || "Create a professional website"}
 
-Selected Model:
-${model || "gemini"}
+Your job is to understand the user's request and return the COMPLETE website state.
 
-Your job is to understand the user's request and generate content/instructions for a professional business website.
+IMPORTANT:
+- The user may be creating a website for the first time.
+- The user may also ask you to MODIFY an existing website.
+- Always return the complete updated state.
+- Preserve existing business information unless the user explicitly asks to change it.
+- If the user asks for a design change, reflect that change in the design object.
+- If the user asks for a new button, include it in buttons.
+- If the user asks for services, update the services array.
+- If the user asks for colors, update the design colors.
+- Never return Markdown.
+- Return ONLY valid JSON.
 
-Return ONLY valid JSON.
-
-Use exactly this structure:
+Return exactly:
 
 {
-  "headline": "short website headline",
-  "description": "professional business description",
+  "headline": "website headline",
+  "description": "professional website description",
   "services": [
     "service 1",
     "service 2",
     "service 3",
     "service 4"
   ],
-  "cta": "short call to action",
+  "cta": "call to action",
+  "buttons": [
+    {
+      "label": "button text",
+      "type": "whatsapp"
+    }
+  ],
   "design": {
     "style": "modern",
     "primaryColor": "#6366f1",
-    "backgroundColor": "#ffffff"
+    "backgroundColor": "#ffffff",
+    "textColor": "#111827",
+    "heroBackground": "#111827"
   },
   "changes": [
-    "what the AI agent created",
-    "what the AI agent changed"
+    "clear description of what was created or changed"
   ]
 }
-
-Do not use Markdown.
-Do not put JSON inside a code block.
 `;
 
   try {
@@ -128,26 +135,10 @@ Do not put JSON inside a code block.
 
     } catch (error) {
 
-      agentResult = {
-        headline: businessName,
+      return res.status(500).json({
+        error: "AI returned invalid JSON"
+      });
 
-        description:
-          aiText || "Professional business website",
-
-        services: [],
-
-        cta: "Contact us today",
-
-        design: {
-          style: "modern",
-          primaryColor: "#6366f1",
-          backgroundColor: "#ffffff"
-        },
-
-        changes: [
-          "AI generated website content"
-        ]
-      };
     }
 
     return res.status(200).json({
