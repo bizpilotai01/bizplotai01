@@ -1,8 +1,57 @@
 module.exports = async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+  if (req.method !== "POST") if (req.method === "GET") {
+  try {
+    const businessName = req.query.businessName;
 
+    if (!businessName) {
+      return res.status(400).json({
+        error: "businessName is required"
+      });
+    }
+
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_KEY;
+
+    const url =
+      supabaseUrl +
+      "/rest/v1/projects?business_name=eq." +
+      encodeURIComponent(businessName) +
+      "&select=*";
+
+    const response = await fetch(url, {
+      headers: {
+        apikey: supabaseKey,
+        Authorization: "Bearer " + supabaseKey
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return res.status(500).json({
+        error: "Failed to load project",
+        details: data
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      project: data[0] || null
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      error: "Load error",
+      details: error.message
+    });
+  }
+}
+
+if (req.method !== "POST") {
+  return res.status(405).json({
+    error: "Method not allowed"
+  });
+}
   try {
     const {
       businessName,
