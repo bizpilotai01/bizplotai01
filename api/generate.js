@@ -11,7 +11,8 @@ export default async function handler(req, res) {
     businessType,
     details,
     command,
-    model
+    model,
+    existingState
   } = req.body;
 
   if (!businessName || !businessType) {
@@ -21,12 +22,25 @@ export default async function handler(req, res) {
   }
 
   const apiKey = process.env.AI_API_KEY;
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_KEY;
 
   if (!apiKey) {
     return res.status(500).json({
       error: "AI_API_KEY is not configured"
     });
   }
+
+  if (!supabaseUrl || !supabaseKey) {
+    return res.status(500).json({
+      error: "Supabase environment variables are not configured"
+    });
+  }
+
+  const previousState =
+    existingState && typeof existingState === "object"
+      ? JSON.stringify(existingState)
+      : "No previous website state exists.";
 
   const prompt = `
 You are BizPilot AI, an AI website-building agent.
@@ -36,20 +50,24 @@ Name: ${businessName}
 Type: ${businessType}
 Details: ${details || "Not provided"}
 
+Previous website state:
+${previousState}
+
 User request:
 ${command || "Create a professional website"}
 
-Your job is to understand the user's request and return the COMPLETE website state.
+Your job is to understand the user's request and return the COMPLETE UPDATED website state.
 
 IMPORTANT:
-- The user may be creating a website for the first time.
-- The user may also ask you to MODIFY an existing website.
-- Always return the complete updated state.
-- Preserve existing business information unless the user explicitly asks to change it.
-- If the user asks for a design change, reflect that change in the design object.
-- If the user asks for a new button, include it in buttons.
-- If the user asks for services, update the services array.
-- If the user asks for colors, update the design colors.
+- If this is a new website, create the complete website state.
+- If a previous website state exists, MODIFY that state according to the user's request.
+- Preserve existing information unless the user asks to change it.
+- Never remove existing services unless the user asks.
+- If the user asks to add a service, keep the existing services and add the new one.
+- If the user asks to change colors, update the design colors.
+- If the user asks to add a button, include it.
+- If the user asks to change the headline, change only the headline unless necessary.
+- Always return the COMPLETE website state.
 - Never return Markdown.
 - Return ONLY valid JSON.
 
@@ -141,6 +159,81 @@ Return exactly:
 
     }
 
+    /*
+      SAVE WEBSITE STATE TO SUPABASE
+    */
+
+    const projectData = {
+      business_name: businessName,
+      business_type: businessType,
+      details: details || "",
+      website_state: agentResult
+    };
+
+    const existingResponse = await fetch(
+      `${supabaseUrl}/rest/v1/projects?business_name=eq.${encodeURIComponent(businessName)}&select=id`,
+      {
+        method: "GET",
+        headers: {
+          "apikey": supabaseKey,
+          "Authorization": `Bearer ${supabaseKey}`
+        }
+      }
+    );
+
+    const existingProjects = await existingResponse.json();
+
+    let saveResponse;
+
+    if (Array.isArray(existingProjects) && existingProjects.length > 0) {
+
+      const projectId = existingProjects[0].id;
+
+      saveResponse = await fetch(
+        `${supabaseUrl}/rest/v1/projects?id=eq.${projectId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": supabaseKey,
+            "Authorization": `Bearer ${supabaseKey}",
+            "Prefer": "return=minimal"
+          },
+          body: JSON.stringify(projectData)
+        }
+      );
+
+    } else {
+
+      saveResponse = await fetch(
+        `${supabaseUrl}/rest/v1/projects`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": supabaseKey,
+            "Authorization": `Bearer ${supabaseKey}`,
+            "Prefer": "return=minimal"
+          },
+          body: JSON.stringify(projectData)
+        }
+      );
+
+    }
+
+    if (!saveResponse.ok) {
+
+      const saveError = await saveResponse.text();
+
+      console.log("Supabase save error:", saveError);
+
+      return res.status(500).json({
+        error: "Website generated, but Supabase save failed",
+        details: saveError
+      });
+
+    }
+
     return res.status(200).json({
 
       success: true,
@@ -153,7 +246,9 @@ Return exactly:
         details: details || ""
       },
 
-      agent: agentResult
+      agent: agentResult,
+
+      saved: true
 
     });
 
