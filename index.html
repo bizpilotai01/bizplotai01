@@ -1,6 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizPilot AI</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      padding: 60px 20px;
+    }
+
+    h1 {
+      font-size: 42px;
+      text-align: center;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #cbd5e1;
+      font-size: 18px;
+      margin-bottom: 40px;
+    }
+
+    .box {
+      background: #1e293b;
+      padding: 25px;
+      border-radius: 15px;
+    }
+
+    input, textarea {
+      width: 100%;
+      box-sizing: border-box;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+
+    textarea {
+      height: 120px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 15px;
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      background: #6366f1;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 25px;
+      padding: 20px;
+      background: #334155;
+      border-radius: 10px;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>🚀 BizPilot AI</h1>
+
+  <p class="subtitle">
+    Create a professional website for your local business.
+  </p>
+
+  <div class="box">
+
+    <input id="businessName" placeholder="Business Name">
+
+    <input id="businessType" placeholder="Business Type (Salon, Cafe, Gym...)">
+
+    <input id="phone" placeholder="Phone / WhatsApp Number">
+
+    <textarea id="details"
+      placeholder="Tell us about your business, services, location, timings..."></textarea>
+
+    <button onclick="generateWebsite()">
+      ✨ Generate My Website
+    </button>
+
+    <div id="result"></div>
+
+  </div>
+
+</div>
 
 <script>
 async function generateWebsite() {
+
   const name = document.getElementById("businessName").value.trim();
   const type = document.getElementById("businessType").value.trim();
   const phone = document.getElementById("phone").value.trim();
@@ -16,6 +122,7 @@ async function generateWebsite() {
   result.innerHTML = "⏳ Creating your website...";
 
   try {
+
     const response = await fetch("/api/generate", {
       method: "POST",
       headers: {
@@ -45,7 +152,12 @@ async function generateWebsite() {
       "<p>" + (data.ai || "No AI content returned.") + "</p>";
 
   } catch (error) {
+
     result.innerHTML = "❌ " + error.message;
+
   }
 }
 </script>
+
+</body>
+</html>
